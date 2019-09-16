@@ -10,6 +10,12 @@ def test_build(test, target, wdir):
   """ Try building `target` in `wdir` using a Makefile (test_makefile) and send
       any output to the console.  Fail `test` if there is a problem.
       """
+  # If the target already exists, remove it
+  # Simpler to put this here than require every makefile to have a `clean` command
+  if os.path.isfile(wdir + target):
+    os.remove(wdir + target)
+    print("Removing submitted binary...")
+
   try:
     log = sp.check_output(["make", "-f", wdir + "test_makefile", "--silent", "--always-make", "-C", wdir, target], stderr = sp.STDOUT)
 
