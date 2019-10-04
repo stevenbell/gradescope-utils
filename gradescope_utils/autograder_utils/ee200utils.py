@@ -6,10 +6,15 @@ import os.path
 # Small functions that get used repeatedly in creating and running tests
 # on student C/C++ code.
 
-def test_build(test, target, wdir):
-  """ Try building `target` in `wdir` using a Makefile (test_makefile) and send
+def test_build(test, target, wdir, makefile='test_makefile', maketarget=None):
+  """ Try building `target` in `wdir` using a `makefile` and send
       any output to the console.  Fail `test` if there is a problem.
       """
+  # If the user didn't specify a separate makefile target, then just use the
+  # name of the output file.  This is the normal case, except for phony targets.
+  if maketarget is None:
+    maketarget = target
+
   # If the target already exists, remove it
   # Simpler to put this here than require every makefile to have a `clean` command
   if os.path.isfile(wdir + target):
@@ -17,7 +22,7 @@ def test_build(test, target, wdir):
     print("Removing submitted binary...")
 
   try:
-    log = sp.check_output(["make", "-f", wdir + "test_makefile", "--silent", "--always-make", "-C", wdir, target], stderr = sp.STDOUT)
+    log = sp.check_output(["make", "-f", wdir + makefile, "--silent", "--always-make", "-C", wdir, maketarget], stderr = sp.STDOUT)
 
   except sp.CalledProcessError as e:
     test.fail("Failed to compile. Output is: {}".format(e.output.decode('utf-8')))
