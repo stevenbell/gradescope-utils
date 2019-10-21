@@ -47,9 +47,11 @@ def safe_run(test, command, timeout=5, **kwargs):
     except sp.CalledProcessError as e:
         if e.returncode == -signal.SIGSEGV:
             test.fail("Program segfaulted")
+        elif e.returncode == -signal.SIGABRT:
+            test.fail("Program was aborted (assert failed or memory was corrupted)")
         else:
             # We don't know what students will return from main, so assume
-            # anything other than a segfault is ok.
+            # anything other than a segfault/abort is ok.
             result = e.output
     except sp.TimeoutExpired as e:
             test.fail("Program timed out after {} seconds".format(timeout))
