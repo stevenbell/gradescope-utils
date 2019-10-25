@@ -38,6 +38,17 @@ def test_build(test, target, wdir, makefile='test_makefile', maketarget=None):
   print('Compiled successfully!')
 
 
+def run_valgrind(test, target, wdir):
+  try:
+    log = sp.check_output(["valgrind", "--tool=memcheck", "--leak-check=yes", "--error-exitcode=4", wdir + target], stderr = sp.STDOUT)
+
+  except sp.CalledProcessError as e:
+    test.fail("Valgrind reported errors:\n {}".format(e.output.decode('utf-8')))
+
+  print("Valgrind clean!")
+
+
+
 def safe_run(test, command, timeout=5, **kwargs):
     """ Wrapper around check_output which fails the test if the code segfaults or
         takes too long.  A brief informative message is logged with the failure."""
