@@ -88,7 +88,7 @@ def harness_run(test, command, timeout=5, **kwargs):
 
 
 def findString(haystack):
-    matches = re.findall('###.*###', haystack)
+    matches = re.findall('###(?:.|\s)*?###', haystack) # (?: non-capturing, *? non-greedy
 
     # There should be exactly one match, or we're hosed
     if len(matches) != 1:
