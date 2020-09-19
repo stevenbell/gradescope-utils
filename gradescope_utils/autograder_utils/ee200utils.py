@@ -37,6 +37,23 @@ def test_build(test, target, wdir, makefile='test_makefile', maketarget=None):
   # Otherwise, we're all good
   print('Compiled successfully!')
 
+def test_coverage(test, source, target, wdir, makefile='test_makefile'):
+  """ Runs gcov (generally on the student's test code) and fails the test if
+      there is less than 100% coverage on the file under test. """
+  try:
+    log = sp.check_output(["make", "-f", wdir + makefile, "CFLAGS=-O0 --coverage", "--silent", "--always-make", "-C", wdir, target], stderr = sp.STDOUT)
+
+  except sp.CalledProcessError as e:
+    test.fail("Failed to compile for test coverage. Output is: {}".format(e.output.decode('utf-8')))
+
+  harness_run(test, [wdir + target])
+  result = harness_run(test, ["gcov", "-n", source], cwd=wdir)
+  match = re.search('\d+\.?\d+\%', result)
+  if match.group() != "100.00%":
+    test.fail("Test coverage is only " + match.group())
+
+  print("Test coverage is 100%!\n(Remember, this doesn't mean your code is correct, or that you're testing everything you should.  It does mean that your tests exercise every path through your program.)")
+
 
 def run_valgrind(test, target, wdir):
   try:
@@ -81,7 +98,7 @@ def harness_run(test, command, timeout=5, **kwargs):
             test.fail("Test harness segfaulted - check with teaching staff")
         else:
             test.fail("Test harness call failed - check with teaching staff")
-    except TimeoutExpired as e:
+    except sp.TimeoutExpired as e:
             test.fail("Test harness timed out - check with teaching staff")
 
     return result.decode('utf-8')
