@@ -46,7 +46,7 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
   except sp.CalledProcessError as e:
     test.fail("Failed to compile for test coverage. Output is: {}".format(e.output.decode('utf-8')))
 
-  harness_run(test, [wdir + target])
+  safe_run(test, [wdir + target], cwd=wdir)
   result = harness_run(test, ["gcov", "-n", source], cwd=wdir)
   match = re.search('\d+\.?\d+\%', result)
   if match.group() != "100.00%":
@@ -63,7 +63,6 @@ def run_valgrind(test, target, wdir):
     test.fail("Valgrind reported errors:\n {}".format(e.output.decode('utf-8')))
 
   print("Valgrind clean!")
-
 
 
 def safe_run(test, command, timeout=5, **kwargs):
