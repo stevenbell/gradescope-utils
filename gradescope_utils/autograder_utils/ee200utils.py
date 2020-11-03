@@ -55,9 +55,11 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
   print("Test coverage is 100%!\n(Remember, this doesn't mean your code is correct, or that you're testing everything you should.  It does mean that your tests exercise every path through your program.)")
 
 
-def run_valgrind(test, target, wdir):
+def run_valgrind(test, command, **kwargs):
+  if not type(command) is list:
+    command = [command]
   try:
-    log = sp.check_output(["valgrind", "--tool=memcheck", "--leak-check=yes", "--error-exitcode=4", wdir + target], stderr = sp.STDOUT)
+    log = sp.check_output(["valgrind", "--tool=memcheck", "--leak-check=yes", "--error-exitcode=4"] + command, stderr = sp.STDOUT, **kwargs)
 
   except sp.CalledProcessError as e:
     test.fail("Valgrind reported errors:\n {}".format(e.output.decode('utf-8')))
