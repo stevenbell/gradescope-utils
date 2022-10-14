@@ -47,7 +47,13 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
     test.fail("Failed to compile for test coverage. Output is: {}".format(e.output.decode('utf-8')))
 
   safe_run(test, [wdir + target], cwd=wdir)
-  result = harness_run(test, ["gcov", "-n", source], cwd=wdir)
+
+  # Somewhere around gcc 11, the naming of the gcov output files changed. As of gcc 11,
+  # `gcc source1.c source2.c -o binary` generates files like binary-source1.gcda
+  # See https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html
+  gcov_name = f"{target}-{source}"
+
+  result = harness_run(test, ["gcov", "-n", gcov_name], cwd=wdir)
   match = re.search('\d+\.?\d+\%', result)
   if match.group() != "100.00%":
     test.fail("Test coverage is only " + match.group())
