@@ -54,9 +54,9 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
   gcov_name = f"{target}-{source}"
 
   result = harness_run(test, ["gcov", "-n", gcov_name], cwd=wdir)
-  match = re.search('\d+\.?\d+\%', result)
-  if match.group() != "100.00%":
-    test.fail("Test coverage is only " + match.group())
+  pctmatch = re.search('\d+\.?\d+\%', result)
+  if pctmatch.group() != "100.00%":
+    test.fail("Test coverage is only " + pctmatch.group())
 
   print("Test coverage is 100%!\n(Remember, this doesn't mean your code is correct, or that you're testing everything you should.  It does mean that your tests exercise every path through your program.)")
 
