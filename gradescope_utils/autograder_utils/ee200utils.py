@@ -53,9 +53,17 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
   # See https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html
   gcov_name = f"{target}-{source}"
 
-  result = harness_run(test, ["gcov", "-n", gcov_name], cwd=wdir)
+  result = harness_run(test, ["gcov", gcov_name], cwd=wdir)
   pctmatch = re.search('\d+\.?\d+\%', result)
   if pctmatch.group() != "100.00%":
+    try:
+      # If we didn't get 100% coverage, try to print the full coverage report
+      gcov_file = open(wdir + source + ".gcov")
+      print(gcov_file.read())
+      print("\n\n")
+    except Exception as e:
+      print("Failed to open coverage report; only summary will be shown.")
+
     test.fail("Test coverage is only " + pctmatch.group())
 
   print("Test coverage is 100%!\n(Remember, this doesn't mean your code is correct, or that you're testing everything you should.  It does mean that your tests exercise every path through your program.)")
