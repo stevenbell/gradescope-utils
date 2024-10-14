@@ -54,7 +54,7 @@ def test_coverage(test, source, target, wdir, makefile='test_makefile'):
   gcov_name = f"{target}-{source}"
 
   result = harness_run(test, ["gcov", gcov_name], cwd=wdir)
-  pctmatch = re.search('\d+\.?\d+\%', result)
+  pctmatch = re.search(r'\d+\.?\d+\%', result)
   if pctmatch.group() != "100.00%":
     try:
       # If we didn't get 100% coverage, try to print the full coverage report
@@ -120,7 +120,7 @@ def harness_run(test, command, timeout=5, **kwargs):
 
 
 def findString(haystack):
-    matches = re.findall('###(?:.|\s)*?###', haystack) # (?: non-capturing, *? non-greedy
+    matches = re.findall(r'###(?:.|\s)*?###', haystack) # (?: non-capturing, *? non-greedy
 
     # There should be exactly one match, or we're hosed
     if len(matches) != 1:
@@ -130,7 +130,7 @@ def findString(haystack):
     return matches[0][3:-3]
 
 def findInteger(haystack):
-    matches = re.findall('###[+-]?\d+###', haystack)
+    matches = re.findall(r'###[+-]?\d+###', haystack)
 
     # There should be exactly one match, or we're hosed
     if len(matches) != 1:
@@ -140,7 +140,7 @@ def findInteger(haystack):
     return int(matches[0][3:-3])
 
 def findDouble(haystack):
-    matches = re.findall('###[+-]?\d+\.\d+###', haystack)
+    matches = re.findall(r'###[+-]?\d+\.\d+###', haystack)
 
     # There should be exactly one match, or we're hosed
     if len(matches) != 1:
